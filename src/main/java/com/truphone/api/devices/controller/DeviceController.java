@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.truphone.api.devices.exception.DeviceNotFoundException;
@@ -29,7 +30,20 @@ public class DeviceController {
 	@GetMapping
 	public ResponseEntity<List<DeviceDto>> getDevices() {
 		try {
+
 			List<DeviceDto> allDevices = deviceService.getAllDevices();
+
+			return new ResponseEntity<>(allDevices, HttpStatus.OK);
+		} catch (DeviceNotFoundException e) {
+			return ResponseEntity.noContent().build();
+		}
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<List<DeviceDto>> getDevicesByBrand(@RequestParam(name = "brand") String brand) {
+		try {
+			List<DeviceDto> allDevices = deviceService.getAllDeviceByBrand(brand);
+
 			return new ResponseEntity<>(allDevices, HttpStatus.OK);
 		} catch (DeviceNotFoundException e) {
 			return ResponseEntity.noContent().build();
@@ -61,27 +75,25 @@ public class DeviceController {
 			return ResponseEntity.notFound().build();
 		}
 	}
-	
+
 	@PutMapping("/{id}")
 	public ResponseEntity<DeviceDto> updateDevice(@PathVariable("id") Long id, @RequestBody DeviceDto device) {
 		try {
-			DeviceDto deviceById = deviceService.updateDevice(device,id);
+			DeviceDto deviceById = deviceService.updateDevice(device, id);
 			return new ResponseEntity<>(deviceById, HttpStatus.OK);
 		} catch (DeviceNotFoundException e) {
 			return ResponseEntity.notFound().build();
 		}
 	}
-	
+
 	@PatchMapping("/{id}")
 	public ResponseEntity<DeviceDto> patchDevice(@PathVariable("id") Long id, @RequestBody DeviceDto device) {
 		try {
-			DeviceDto deviceById = deviceService.patchDevice(device,id);
+			DeviceDto deviceById = deviceService.patchDevice(device, id);
 			return new ResponseEntity<>(deviceById, HttpStatus.OK);
 		} catch (DeviceNotFoundException e) {
 			return ResponseEntity.notFound().build();
 		}
 	}
-	
-	
 
 }

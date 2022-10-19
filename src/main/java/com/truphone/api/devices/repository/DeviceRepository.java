@@ -3,6 +3,8 @@ package com.truphone.api.devices.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.truphone.api.devices.entity.Device;
@@ -10,6 +12,7 @@ import com.truphone.api.devices.entity.Device;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long>{
 	
-	List<Device> findAllByDeviceBrand(String deviceBrand);
+	@Query("Select a from Device a where deviceBrand like %:deviceBrand%")
+	List<Device> findAllByDeviceBrand(@Param("deviceBrand") String deviceBrand);
 
 }
