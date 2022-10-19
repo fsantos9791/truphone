@@ -2,7 +2,6 @@ package com.truphone.api.devices.service;
 
 import java.util.List;
 
-import com.truphone.api.devices.entity.Device;
 import com.truphone.api.devices.model.DeviceDto;
 
 /**
