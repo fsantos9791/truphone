@@ -1,16 +1,21 @@
 package com.truphone.api.devices.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.truphone.api.devices.entity.Device;
 import com.truphone.api.devices.exception.DeviceNotFoundException;
+import com.truphone.api.devices.model.DeviceDto;
 import com.truphone.api.devices.repository.DeviceRepository;
 
+@Service
 public class DeviceServiceImpl implements DeviceService {
 
 	@Autowired
@@ -18,49 +23,58 @@ public class DeviceServiceImpl implements DeviceService {
 
 	@Override
 	@Transactional
-	public Device addDevice(Device device) {
-		return deviceRepository.save(device);
+	public DeviceDto addDevice(DeviceDto deviceDto) {
+		deviceDto.setDeviceId(null);
+		deviceDto.setCreatonTime(LocalDateTime.now());
+		Device device = deviceRepository.save(deviceDto.getDevice());
+		return new DeviceDto(device);
 	}
 
 	@Override
 	@Transactional
-	public Device getDeviceById(Long id) {
+	public DeviceDto getDeviceById(Long id) {
 		Optional<Device> findById = deviceRepository.findById(id);
 		if (findById.isEmpty())
 			throw new DeviceNotFoundException();
-		return findById.get();
+		return new DeviceDto(findById.get());
 	}
 
 	@Override
 	@Transactional
-	public List<Device> getAllDevices() {
-		return deviceRepository.findAll();
+	public List<DeviceDto> getAllDevices() {
+		List<Device> findAll = deviceRepository.findAll();
+		if (findAll.isEmpty())
+			throw new DeviceNotFoundException();
+		return findAll.stream().map(device -> new DeviceDto(device)).collect(Collectors.toList());
 	}
 
 	@Override
 	@Transactional
-	public Device updateDevice(Device device, Long id) {
+	public DeviceDto updateDevice(DeviceDto device, Long id) {
 		Optional<Device> findById = deviceRepository.findById(id);
 		if (findById.isEmpty())
 			throw new DeviceNotFoundException();
 
 		device.setDeviceId(id);
-		return deviceRepository.save(device);
+		device.setCreatonTime(findById.get().getCreatonTime());
+		Device savedDevice = deviceRepository.save(device.getDevice());
+		return new DeviceDto(savedDevice);
 	}
 
 	@Override
 	@Transactional
-	public Device patchDevice(Device device, Long id) {
+	public DeviceDto patchDevice(DeviceDto deviceDto, Long id) {
 		Optional<Device> findById = deviceRepository.findById(id);
 		if (findById.isEmpty())
 			throw new DeviceNotFoundException();
-		if (device.getDeviceBrand() != null) {
-			findById.get().setDeviceBrand(device.getDeviceBrand());
+		if (deviceDto.getDeviceBrand() != null) {
+			findById.get().setDeviceBrand(deviceDto.getDeviceBrand());
 		}
-		if (device.getDeviceName() != null) {
-			findById.get().setDeviceName(device.getDeviceName());
+		if (deviceDto.getDeviceName() != null) {
+			findById.get().setDeviceName(deviceDto.getDeviceName());
 		}
-		return deviceRepository.save(device);
+		Device savedDevice = deviceRepository.save(findById.get());
+		return new DeviceDto(savedDevice);
 	}
 
 	@Override
@@ -73,9 +87,12 @@ public class DeviceServiceImpl implements DeviceService {
 	}
 
 	@Override
-	public List<Device> getAllDeviceByBrand(String brand) {
-
-		return deviceRepository.findAllByDeviceBrand(brand);
+	public List<DeviceDto> getAllDeviceByBrand(String brand) {
+		List<Device> findAllByDeviceBrand = deviceRepository.findAllByDeviceBrand(brand);
+		if (findAllByDeviceBrand.isEmpty()) {
+			throw new DeviceNotFoundException();
+		}
+		return findAllByDeviceBrand.stream().map(device -> new DeviceDto(device)).collect(Collectors.toList());
 	}
 
 }

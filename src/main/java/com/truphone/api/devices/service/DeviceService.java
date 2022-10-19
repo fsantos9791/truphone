@@ -3,6 +3,7 @@ package com.truphone.api.devices.service;
 import java.util.List;
 
 import com.truphone.api.devices.entity.Device;
+import com.truphone.api.devices.model.DeviceDto;
 
 /**
  * @author windows
@@ -13,18 +14,18 @@ public interface DeviceService {
 	 * @param device
 	 * @return
 	 */
-	Device addDevice(Device device);
+	DeviceDto addDevice(DeviceDto device);
 
 	/**
 	 * @param id
 	 * @return
 	 */
-	Device getDeviceById(Long id);
+	DeviceDto getDeviceById(Long id);
 
 	/**
 	 * @return
 	 */
-	List<Device> getAllDevices();
+	List<DeviceDto> getAllDevices();
 
 	
 	/**
@@ -32,7 +33,7 @@ public interface DeviceService {
 	 * @param id
 	 * @return
 	 */
-	Device updateDevice(Device device,Long id);
+	DeviceDto updateDevice(DeviceDto device,Long id);
 
 
 	/**
@@ -40,7 +41,7 @@ public interface DeviceService {
 	 * @param id
 	 * @return
 	 */
-	Device patchDevice(Device device,Long id);
+	DeviceDto patchDevice(DeviceDto device,Long id);
 
 	/**
 	 * @param id
@@ -51,6 +52,6 @@ public interface DeviceService {
 	 * @param brand
 	 * @return
 	 */
-	List<Device> getAllDeviceByBrand(String brand);
+	List<DeviceDto> getAllDeviceByBrand(String brand);
 
 }
